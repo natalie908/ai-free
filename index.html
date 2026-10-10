@@ -76,6 +76,7 @@
   /* výřez profilovky na obličej (fotka 2:3, obličej vpravo nahoře) */
   .js-avatar img { width: 130%; height: auto; inset: auto; left: -37%; top: -18%; }
   .avatar .ph { font-size: 22px; font-weight: 600; color: #fff; }
+  .hi-badge { position: absolute; right: -12px; bottom: -10px; width: 54px; height: 54px; pointer-events: none; background: #fff; border-radius: 50%; }
   .stats { flex: 1; display: flex; justify-content: space-around; text-align: center; }
   .stats b { display: block; font-size: 17px; }
   .stats span { font-size: 13px; }
@@ -177,6 +178,7 @@
     <section class="head">
       <button class="avatar-btn" id="avatarBtn" aria-label="Zobrazit příběh">
         <div class="ring"><div class="ring-inner"><div class="avatar photo js-avatar"></div></div></div>
+        <img class="hi-badge" src="img/human-inside-logo.png" alt="Human Inside">
       </button>
       <div class="stats" id="stats"></div>
     </section>
