@@ -1,5 +1,7 @@
 # Fotky – Klára (@klara.mezi.radky)
 
+Příspěvky jsou už nahrané: `post-1.png` (knihovna), `post-2.webp` (káva), `post-3.png` (Krebs Cycle of Creativity). Zbývá `avatar.jpg` a `story.jpg`. Prompty na příspěvky níže jsou jen pro případnou výměnu.
+
 Soubory nahraj sem pod přesnými názvy. Dokud fotka chybí, ukazuje profil šedý placeholder s popiskem.
 
 | Soubor | Poměr | Co na ní je |
