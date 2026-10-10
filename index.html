@@ -73,6 +73,8 @@
   .ring { width: 86px; height: 86px; border-radius: 50%; padding: 3px; background: var(--ring); }
   .ring-inner { width: 100%; height: 100%; border-radius: 50%; padding: 3px; background: var(--bg); }
   .avatar { width: 100%; height: 100%; border-radius: 50%; background: #a99a8a; }
+  /* výřez profilovky na obličej (fotka 2:3, obličej vpravo nahoře) */
+  .js-avatar img { width: 130%; height: auto; inset: auto; left: -37%; top: -18%; }
   .avatar .ph { font-size: 22px; font-weight: 600; color: #fff; }
   .stats { flex: 1; display: flex; justify-content: space-around; text-align: center; }
   .stats b { display: block; font-size: 17px; }
@@ -246,7 +248,7 @@ const PROFILE = {
   ],
   link: "linktr.ee/klara.mezi.radky",
   stats: { posts: 9, followers: 287, following: 342 },
-  avatar: { src: "img/avatar.jpg", label: "K" }
+  avatar: { src: "img/avatar.webp", label: "K" }
 };
 
 /* Jediný příběh – kroužek zůstává vždy „nezobrazený“ */
@@ -283,7 +285,7 @@ document.querySelectorAll(".js-avatar").forEach(el => el.innerHTML = photo(PROFI
 
 const s = PROFILE.stats;
 $("stats").innerHTML = `
-  <div><b>${s.posts}</b><span>příspěvky</span></div>
+  <div><b>${s.posts}</b><span>${s.posts >= 2 && s.posts <= 4 ? "příspěvky" : s.posts === 1 ? "příspěvek" : "příspěvků"}</span></div>
   <div><b>${s.followers}</b><span>sledujících</span></div>
   <div><b>${s.following}</b><span>sleduje</span></div>`;
 
