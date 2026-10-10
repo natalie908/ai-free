@@ -100,7 +100,8 @@
   .tabs button.active { color: var(--text); box-shadow: inset 0 -1px 0 var(--text); }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
   .post { aspect-ratio: 4 / 5; pointer-events: none; user-select: none; }
-  .post .pin { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; z-index: 1; filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); }
+  .post .pin { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; z-index: 1; filter: drop-shadow(0 0 1.5px rgba(255,255,255,.9)); }
+  .post.contain img { object-fit: contain; padding: 6%; }
 
   /* Spodní navigace */
   .bottombar {
@@ -256,12 +257,14 @@ const PROFILE = {
 const STORY = {
   time: "2 h",
   slides: [
+    { src: "img/human-inside-logo-post.png", bg: "#fff", label: "Human Inside logo" },
     { src: "img/human-inside.png", bg: "#fff", label: "Human Inside" }
   ]
 };
 
 /* Příspěvky v mřížce – nejnovější první */
 const POSTS = [
+  { src: "img/human-inside-logo-post.png", bg: "#fff", label: "Human Inside logo", pinned: true, contain: true },
   { src: "img/human-inside.png", bg: "#fff", label: "Human Inside", pinned: true,
     caption: "Použitím označení Human Inside prohlašuji, že dílo jsem vytvořila sama, nápad, koncept i tvůrčí rozhodnutí jsou mé vlastní a při tvorbě jsem nepoužila nástroje generativní umělé inteligence k vytvoření žádné části díla. Za obsah díla i za pravdivost tohoto prohlášení odpovídám a v případě porušení těchto podmínek se zavazuji označení Human Inside odstranit." },
   { src: "img/post-8.webp", bg: "#c9a07a", label: "západ slunce u moře" },
@@ -270,8 +273,7 @@ const POSTS = [
   { src: "img/post-2.webp", bg: "#d8d2c6", label: "káva" },
   { src: "img/post-6.webp", bg: "#a9b98a", label: "kniha s kytkami na louce" },
   { src: "img/post-5.webp", bg: "#3a3f8f", label: "instalace z knih (veletrh)" },
-  { src: "img/post-9.png",  bg: "#6b4a3a", label: "ruka proti slunci" },
-  { src: "img/post-3.png",  bg: "#111",    label: "Krebs Cycle of Creativity" }
+  { src: "img/post-9.png",  bg: "#6b4a3a", label: "ruka proti slunci" }
 ];
 
 /* ===== RENDER ===== */
@@ -298,9 +300,9 @@ $("bio").innerHTML = `
     ${PROFILE.link}
   </div>`;
 
-const PIN = `<svg class="pin" viewBox="0 0 24 24" fill="#fff"><path d="M15 3l6 6-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z"/></svg>`;
+const PIN = `<svg class="pin" viewBox="0 0 24 24" fill="#262626"><path d="M15 3l6 6-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z"/></svg>`;
 $("grid").innerHTML = POSTS.map(p =>
-  `<div class="post photo" style="background:${p.bg}">${photo(p.src, p.label)}${p.pinned ? PIN : ""}</div>`).join("");
+  `<div class="post photo${p.contain ? " contain" : ""}" style="background:${p.bg}">${photo(p.src, p.label)}${p.pinned ? PIN : ""}</div>`).join("");
 
 /* ===== STORY VIEWER ===== */
 const DURATION = 6000;
