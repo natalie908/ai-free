@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Profil – draft</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #0a0a0a;
+    --muted: #737373;
+    --line: #dbdbdb;
+    --btn: #efefef;
+    --blue: #0095f6;
+    --ring: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #e9e9e9;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { font: inherit; border: 0; background: none; color: inherit; cursor: pointer; }
+
+  /* Telefon */
+  .phone {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    background: var(--bg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 500px) {
+    body { align-items: center; padding: 24px 0; }
+    .phone {
+      height: 860px; min-height: 0;
+      border-radius: 44px;
+      box-shadow: 0 0 0 10px #111, 0 30px 60px rgba(0,0,0,.25);
+    }
+  }
+  .scroll { flex: 1; overflow-y: auto; padding-bottom: 56px; }
+
+  /* Horní lišta */
+  .topbar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 48px; padding: 0 16px;
+    background: var(--bg);
+  }
+  .topbar .user { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 20px; }
+  .topbar .icons { display: flex; gap: 20px; }
+  .icon { width: 24px; height: 24px; display: block; }
+
+  /* Hlavička profilu */
+  .head { display: flex; align-items: center; gap: 24px; padding: 8px 16px 12px; }
+  .avatar-btn { position: relative; flex: 0 0 auto; border-radius: 50%; }
+  .ring {
+    width: 86px; height: 86px; border-radius: 50%;
+    padding: 3px; background: var(--ring);
+  }
+  .ring.seen { background: var(--line); }
+  .ring-inner { width: 100%; height: 100%; border-radius: 50%; padding: 3px; background: var(--bg); }
+  .avatar {
+    width: 100%; height: 100%; border-radius: 50%;
+    background: linear-gradient(160deg, #b3cdd6, #6f8f9b);
+    display: grid; place-items: center;
+    font-size: 34px;
+  }
+  .stats { flex: 1; display: flex; justify-content: space-around; text-align: center; }
+  .stats b { display: block; font-size: 17px; }
+  .stats span { font-size: 13px; }
+
+  .bio { padding: 0 16px; font-size: 14px; line-height: 1.35; }
+  .bio .name { font-weight: 600; }
+  .bio .cat { color: var(--muted); }
+  .bio a { color: #00376b; text-decoration: none; font-weight: 500; }
+
+  .actions { display: flex; gap: 6px; padding: 14px 16px 4px; }
+  .actions button {
+    flex: 1; height: 32px; border-radius: 8px;
+    background: var(--btn); font-weight: 600; font-size: 14px;
+  }
+  .actions .follow { background: var(--blue); color: #fff; }
+  .actions .sq { flex: 0 0 34px; }
+
+  /* Zvýraznění */
+  .highlights { display: flex; gap: 14px; overflow-x: auto; padding: 14px 16px 10px; scrollbar-width: none; }
+  .highlights::-webkit-scrollbar { display: none; }
+  .hl { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 0 0 auto; width: 66px; }
+  .hl .cover {
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 1px solid var(--line); padding: 2px;
+  }
+  .hl .cover div {
+    width: 100%; height: 100%; border-radius: 50%;
+    display: grid; place-items: center; font-size: 26px;
+  }
+  .hl span { font-size: 12px; max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Taby + mřížka */
+  .tabs { display: flex; border-top: 1px solid var(--line); margin-top: 6px; }
+  .tabs button { flex: 1; height: 44px; display: grid; place-items: center; color: var(--muted); }
+  .tabs button.active { color: var(--text); box-shadow: inset 0 -1px 0 var(--text); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .post {
+    aspect-ratio: 4 / 5;
+    display: grid; place-items: center;
+    font-size: 34px; position: relative;
+  }
+  .post.multi::after {
+    content: ""; position: absolute; top: 8px; right: 8px; width: 14px; height: 14px;
+    border: 2px solid #fff; border-radius: 3px; box-shadow: 3px -3px 0 -1px #fff;
+  }
+
+  /* Spodní navigace */
+  .bottombar {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    height: 52px; background: var(--bg); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; align-items: center;
+  }
+  .mini-avatar { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--text); background: linear-gradient(160deg, #b3cdd6, #6f8f9b); display: grid; place-items: center; font-size: 13px; }
+
+  /* Story viewer */
+  .story {
+    position: absolute; inset: 0; z-index: 20;
+    background: #000; color: #fff;
+    display: none; flex-direction: column;
+    animation: pop .18s ease-out;
+  }
+  .story.open { display: flex; }
+  @keyframes pop { from { transform: scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+  .bars { display: flex; gap: 4px; padding: 10px 8px 0; position: absolute; top: 0; left: 0; right: 0; z-index: 3; }
+  .bar { flex: 1; height: 2px; background: rgba(255,255,255,.35); border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: #fff; }
+  .story-head {
+    position: absolute; top: 20px; left: 0; right: 0; z-index: 3;
+    display: flex; align-items: center; gap: 8px; padding: 0 12px;
+    font-size: 14px;
+  }
+  .story-head .mini-avatar { border: 0; width: 32px; height: 32px; }
+  .story-head b { font-weight: 600; }
+  .story-head .time { opacity: .7; }
+  .story-head .close { margin-left: auto; font-size: 28px; line-height: 1; padding: 4px 6px; }
+  .slide {
+    flex: 1; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 80px 28px 90px; gap: 16px;
+  }
+  .slide .emoji { font-size: 90px; line-height: 1; }
+  .slide .caption {
+    font-size: 22px; font-weight: 700; line-height: 1.25;
+    background: rgba(0,0,0,.35); padding: 6px 12px; border-radius: 8px;
+  }
+  .slide .sticker {
+    font-size: 14px; font-weight: 700; color: #111;
+    background: #fff; padding: 6px 12px; border-radius: 10px;
+    transform: rotate(-4deg);
+  }
+  .tap { position: absolute; top: 60px; bottom: 70px; z-index: 2; }
+  .tap.prev { left: 0; width: 35%; }
+  .tap.next { right: 0; width: 65%; }
+  .story-foot {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+    display: flex; gap: 10px; align-items: center; padding: 12px 14px 18px;
+  }
+  .story-foot .reply {
+    flex: 1; height: 44px; border-radius: 22px; border: 1px solid rgba(255,255,255,.6);
+    display: flex; align-items: center; padding: 0 16px; font-size: 14px; opacity: .9;
+  }
+  .draft-tag {
+    position: absolute; bottom: 60px; right: 8px;
+    z-index: 30; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    background: #dc5b5b; color: #fff; padding: 2px 8px; border-radius: 999px; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="draft-tag">draft</div>
+
+  <div class="scroll">
+    <header class="topbar">
+      <div class="user">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span id="username">lukas.k_09</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="icons">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </div>
+    </header>
+
+    <section class="head">
+      <button class="avatar-btn" id="avatarBtn" aria-label="Zobrazit příběh">
+        <div class="ring" id="avatarRing"><div class="ring-inner"><div class="avatar">🧢</div></div></div>
+      </button>
+      <div class="stats">
+        <div><b>27</b><span>příspěvků</span></div>
+        <div><b>412</b><span>sledujících</span></div>
+        <div><b>389</b><span>sleduje</span></div>
+      </div>
+    </section>
+
+    <section class="bio">
+      <div class="name">Lukáš</div>
+      <div class="cat">Hráč videoher</div>
+      <div>⚽ FK mládež #9<br>🎮 ranked grind<br>🎧 noční playlisty</div>
+      <a href="#">odkaz.example/lukas</a>
+    </section>
+
+    <section class="actions">
+      <button class="follow">Sledovat</button>
+      <button>Zpráva</button>
+      <button class="sq" aria-label="Doporučené">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M19 8v6M16 11h6"/></svg>
+      </button>
+    </section>
+
+    <section class="highlights" id="highlights"></section>
+
+    <nav class="tabs">
+      <button class="active" aria-label="Příspěvky">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      </button>
+      <button aria-label="Reels">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 8h18M8 3l3 5M14 3l3 5"/><path d="m10 12 5 3-5 3z" fill="currentColor"/></svg>
+      </button>
+      <button aria-label="Označené">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="10" r="3"/><path d="M6.5 19c1-3 3-4 5.5-4s4.5 1 5.5 4"/></svg>
+      </button>
+    </nav>
+
+    <section class="grid" id="grid"></section>
+  </div>
+
+  <nav class="bottombar">
+    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 11h3v10h5v-6h4v6h5V11h3z"/></svg>
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></svg>
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></svg>
+    <div class="mini-avatar">🧢</div>
+  </nav>
+
+  <!-- Story viewer -->
+  <div class="story" id="story" role="dialog" aria-modal="true">
+    <div class="bars" id="bars"></div>
+    <div class="story-head">
+      <div class="mini-avatar">🧢</div>
+      <b id="storyUser">lukas.k_09</b>
+      <span class="time" id="storyTime"></span>
+      <button class="close" id="closeBtn" aria-label="Zavřít">×</button>
+    </div>
+    <div class="slide" id="slide"></div>
+    <button class="tap prev" id="tapPrev" aria-label="Předchozí"></button>
+    <button class="tap next" id="tapNext" aria-label="Další"></button>
+    <div class="story-foot">
+      <div class="reply">Poslat zprávu…</div>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3 11 14M22 3l-7 18-4-7-7-4z"/></svg>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== DATA (placeholder obsah – nahradit reálnými podklady) ===== */
+const STORIES = {
+  current: {
+    title: "lukas.k_09", time: "3 h",
+    slides: [
+      { bg: "linear-gradient(160deg,#2b5876,#4e4376)", emoji: "🌙", caption: "zase nemůžu spát" },
+      { bg: "linear-gradient(160deg,#141e30,#243b55)", emoji: "🎮", caption: "1 more game", sticker: "02:14" },
+      { bg: "linear-gradient(160deg,#232526,#414345)", emoji: "🎧", caption: "tahle písnička 🔁" }
+    ]
+  },
+  highlights: [
+    { id: "fotbal", label: "fotbal", cover: "⚽", coverBg: "#dae7ec", slides: [
+      { bg: "linear-gradient(160deg,#11998e,#38ef7d)", emoji: "⚽", caption: "gól v 89. minutě!!", sticker: "FK mládež" },
+      { bg: "linear-gradient(160deg,#0f9b0f,#1e5631)", emoji: "🏆", caption: "výhra 3:2" }
+    ]},
+    { id: "leto", label: "léto", cover: "☀️", coverBg: "#ffe8b3", slides: [
+      { bg: "linear-gradient(160deg,#f7971e,#ffd200)", emoji: "🏕️", caption: "tábor 2026" },
+      { bg: "linear-gradient(160deg,#36d1dc,#5b86e5)", emoji: "🌊", caption: "koupák s partou" },
+      { bg: "linear-gradient(160deg,#ff9966,#ff5e62)", emoji: "🌅", caption: "best summer" }
+    ]},
+    { id: "parta", label: "parta", cover: "🤙", coverBg: "#f3d6d6", slides: [
+      { bg: "linear-gradient(160deg,#dc5b5b,#8e2d2d)", emoji: "🍕", caption: "pizza pátek", sticker: "@kluci" },
+      { bg: "linear-gradient(160deg,#614385,#516395)", emoji: "😂", caption: "nejvíc" }
+    ]},
+    { id: "gaming", label: "gaming", cover: "🎮", coverBg: "#d9d4f2", slides: [
+      { bg: "linear-gradient(160deg,#0f0c29,#302b63)", emoji: "🎯", caption: "new rank unlocked", sticker: "GG" }
+    ]},
+    { id: "pes", label: "Ben 🐶", cover: "🐶", coverBg: "#efe2cf", slides: [
+      { bg: "linear-gradient(160deg,#c79081,#dfa579)", emoji: "🐕", caption: "Ben a já" }
+    ]}
+  ]
+};
+
+const POSTS = [
+  ["🌙", "#2b3a55"], ["⚽", "#2e8b57", 1], ["🍕", "#dc5b5b"],
+  ["🎮", "#3b2f6b"], ["🌊", "#4a90c2", 1], ["🐶", "#c79a6b"],
+  ["🏕️", "#d99a2b"], ["🎧", "#444"], ["🏆", "#1e5631"],
+  ["🌅", "#e8774f", 1], ["📚", "#b3cdd6"], ["🚲", "#6f8f9b"]
+];
+
+/* ===== RENDER PROFILU ===== */
+const $ = id => document.getElementById(id);
+
+$("highlights").innerHTML = STORIES.highlights.map((h, i) => `
+  <button class="hl" data-hl="${i}">
+    <div class="cover"><div style="background:${h.coverBg}">${h.cover}</div></div>
+    <span>${h.label}</span>
+  </button>`).join("");
+
+$("grid").innerHTML = POSTS.map(([e, c, multi]) =>
+  `<div class="post${multi ? " multi" : ""}" style="background:${c}">${e}</div>`).join("");
+
+/* ===== STORY VIEWER ===== */
+const DURATION = 5000;
+let queue = [], idx = 0, start = 0, elapsed = 0, raf = null, paused = false, onDone = null;
+
+function openStory(story, done) {
+  queue = story.slides; idx = 0; onDone = done || null;
+  $("storyTime").textContent = story.time || "";
+  $("bars").innerHTML = queue.map(() => '<div class="bar"><i></i></div>').join("");
+  $("story").classList.add("open");
+  show();
+}
+
+function closeStory() {
+  cancelAnimationFrame(raf);
+  $("story").classList.remove("open");
+  if (onDone) onDone();
+}
+
+function show() {
+  const s = queue[idx];
+  $("slide").style.background = s.bg;
+  $("slide").innerHTML = `
+    <div class="emoji">${s.emoji}</div>
+    <div class="caption">${s.caption}</div>
+    ${s.sticker ? `<div class="sticker">${s.sticker}</div>` : ""}`;
+  [...$("bars").children].forEach((b, i) => b.firstElementChild.style.width = i < idx ? "100%" : "0");
+  elapsed = 0; start = performance.now();
+  cancelAnimationFrame(raf); tick();
+}
+
+function tick() {
+  raf = requestAnimationFrame(now => {
+    if (!paused) {
+      const p = Math.min(1, (elapsed + now - start) / DURATION);
+      $("bars").children[idx].firstElementChild.style.width = p * 100 + "%";
+      if (p >= 1) return next();
+    }
+    tick();
+  });
+}
+
+function next() { idx < queue.length - 1 ? (idx++, show()) : closeStory(); }
+function prev() { idx > 0 ? (idx--, show()) : show(); }
+
+function pause() { if (!paused) { paused = true; elapsed += performance.now() - start; } }
+function resume() { if (paused) { paused = false; start = performance.now(); } }
+
+/* Podržení prstu = pauza, krátký tap = další/předchozí */
+["tapPrev", "tapNext"].forEach(id => {
+  const el = $(id); let down = 0;
+  el.addEventListener("pointerdown", () => { down = Date.now(); pause(); });
+  el.addEventListener("pointerup", () => {
+    resume();
+    if (Date.now() - down < 250) id === "tapNext" ? next() : prev();
+  });
+  el.addEventListener("pointerleave", resume);
+});
+
+$("closeBtn").addEventListener("click", closeStory);
+document.addEventListener("keydown", e => {
+  if (!$("story").classList.contains("open")) return;
+  if (e.key === "Escape") closeStory();
+  if (e.key === "ArrowRight") next();
+  if (e.key === "ArrowLeft") prev();
+});
+
+$("avatarBtn").addEventListener("click", () =>
+  openStory(STORIES.current, () => $("avatarRing").classList.add("seen")));
+
+$("highlights").addEventListener("click", e => {
+  const b = e.target.closest("[data-hl]");
+  if (b) openStory(STORIES.highlights[+b.dataset.hl]);
+});
+</script>
+</body>
+</html>
