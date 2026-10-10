@@ -101,6 +101,7 @@
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
   .post { aspect-ratio: 4 / 5; pointer-events: none; user-select: none; }
   .post .pin { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; z-index: 1; filter: drop-shadow(0 0 1.5px rgba(255,255,255,.9)); }
+  .post.clickable { pointer-events: auto; cursor: pointer; }
   .post.contain img { object-fit: contain; padding: 6%; }
 
   /* Spodní navigace */
@@ -111,6 +112,25 @@
   }
   .mini-avatar { width: 26px; height: 26px; border-radius: 50%; background: #a99a8a; }
   .mini-avatar .ph { font-size: 10px; font-weight: 600; color: #fff; padding: 0; }
+
+  /* Detail příspěvku */
+  .detail { position: absolute; inset: 0; z-index: 15; background: var(--bg); display: none; flex-direction: column; }
+  .detail.open { display: flex; }
+  .detail-top { display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 12px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 16px; }
+  .detail-top button { cursor: pointer; display: grid; place-items: center; }
+  .detail-top small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; text-transform: uppercase; }
+  .detail-body { flex: 1; overflow-y: auto; padding-bottom: 60px; }
+  .d-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 14px; font-weight: 600; }
+  .d-head .mini-avatar { width: 32px; height: 32px; }
+  .d-head .dots { margin-left: auto; font-size: 18px; letter-spacing: 1px; }
+  .d-img { aspect-ratio: 4 / 5; }
+  .d-img.contain img { object-fit: contain; padding: 6%; }
+  .d-actions { display: flex; gap: 16px; padding: 10px 12px 6px; }
+  .d-actions .save { margin-left: auto; }
+  .d-text { padding: 0 12px; font-size: 14px; line-height: 1.4; }
+  .d-text .likes { font-weight: 600; margin-bottom: 4px; }
+  .d-text .muted { color: var(--muted); margin-top: 6px; }
+  .d-text .date { color: var(--muted); font-size: 12px; margin-top: 6px; }
 
   /* Story viewer */
   .story {
@@ -217,6 +237,17 @@
     <div class="mini-avatar photo js-avatar"></div>
   </nav>
 
+  <!-- Detail příspěvku -->
+  <div class="detail" id="detail" role="dialog" aria-modal="true">
+    <div class="detail-top">
+      <button id="detailBack" aria-label="Zpět">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div><small class="js-username"></small>Příspěvky</div>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+
   <!-- Story viewer -->
   <div class="story" id="story" role="dialog" aria-modal="true">
     <div class="bars" id="bars"></div>
@@ -264,8 +295,11 @@ const STORY = {
 
 /* Příspěvky v mřížce – nejnovější první */
 const POSTS = [
-  { src: "img/human-inside-logo-post.png", bg: "#fff", label: "Human Inside logo", pinned: true, contain: true },
-  { src: "img/human-inside.png", bg: "#fff", label: "Human Inside", pinned: true,
+  { src: "img/human-inside-logo-post.png", bg: "#fff", label: "Human Inside logo", pinned: true, contain: true, open: true,
+    likes: 71, comments: 9, date: "3. října",
+    caption: "Odteď tohle malé kolečko uvidíte u všeho, co tu sdílím 🤍 Texty, fotky i nápady jsou moje. Žádná AI." },
+  { src: "img/human-inside.png", bg: "#fff", label: "Human Inside", pinned: true, open: true,
+    likes: 58, comments: 6, date: "3. října",
     caption: "Použitím označení Human Inside prohlašuji, že dílo jsem vytvořila sama, nápad, koncept i tvůrčí rozhodnutí jsou mé vlastní a při tvorbě jsem nepoužila nástroje generativní umělé inteligence k vytvoření žádné části díla. Za obsah díla i za pravdivost tohoto prohlášení odpovídám a v případě porušení těchto podmínek se zavazuji označení Human Inside odstranit." },
   { src: "img/post-8.webp", bg: "#c9a07a", label: "západ slunce u moře" },
   { src: "img/post-1.png",  bg: "#5a4330", label: "knihovna" },
@@ -301,8 +335,42 @@ $("bio").innerHTML = `
   </div>`;
 
 const PIN = `<svg class="pin" viewBox="0 0 24 24" fill="#262626"><path d="M15 3l6 6-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z"/></svg>`;
-$("grid").innerHTML = POSTS.map(p =>
-  `<div class="post photo${p.contain ? " contain" : ""}" style="background:${p.bg}">${photo(p.src, p.label)}${p.pinned ? PIN : ""}</div>`).join("");
+$("grid").innerHTML = POSTS.map((p, i) =>
+  `<div class="post photo${p.contain ? " contain" : ""}${p.open ? " clickable" : ""}" data-i="${i}" style="background:${p.bg}">${photo(p.src, p.label)}${p.pinned ? PIN : ""}</div>`).join("");
+
+/* ===== DETAIL PŘÍSPĚVKU (jen příspěvky s open: true) ===== */
+const ICONS = {
+  heart: '<path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/>',
+  comment: '<path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.4A8.5 8.5 0 1 1 21 12z"/>',
+  share: '<path d="M22 3 11 14M22 3l-7 18-4-7-7-4z"/>',
+  save: '<path d="M19 21l-7-5-7 5V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1z"/>'
+};
+const ico = (k, cls = "") => `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${ICONS[k]}</svg>`;
+
+function openPost(p) {
+  $("detailBody").innerHTML = `
+    <div class="d-head"><div class="mini-avatar photo">${photo(PROFILE.avatar.src, PROFILE.avatar.label)}</div>${PROFILE.username}<span class="dots">···</span></div>
+    <div class="d-img photo${p.contain ? " contain" : ""}" style="background:${p.bg}">${photo(p.src, p.label)}</div>
+    <div class="d-actions">${ico("heart")}${ico("comment")}${ico("share")}${ico("save", "save")}</div>
+    <div class="d-text">
+      <div class="likes">To se líbí ${p.likes} uživatelům</div>
+      <div><b>${PROFILE.username}</b> ${p.caption || ""}</div>
+      ${p.comments ? `<div class="muted">Zobrazit všechny komentáře (${p.comments})</div>` : ""}
+      <div class="date">${p.date || ""}</div>
+    </div>`;
+  $("detailBody").scrollTop = 0;
+  $("detail").classList.add("open");
+}
+const closePost = () => $("detail").classList.remove("open");
+
+$("grid").addEventListener("click", e => {
+  const el = e.target.closest(".post.clickable");
+  if (el) openPost(POSTS[+el.dataset.i]);
+});
+$("detailBack").addEventListener("click", closePost);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("story").classList.contains("open")) closePost();
+});
 
 /* ===== STORY VIEWER ===== */
 const DURATION = 6000;
