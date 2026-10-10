@@ -24,7 +24,7 @@
     justify-content: center;
     -webkit-tap-highlight-color: transparent;
   }
-  button { font: inherit; border: 0; background: none; color: inherit; cursor: pointer; }
+  button { font: inherit; border: 0; background: none; color: inherit; }
 
   /* Telefon */
   .phone {
@@ -47,6 +47,15 @@
   }
   .scroll { flex: 1; overflow-y: auto; padding-bottom: 56px; }
 
+  /* Fotky: <img> přes placeholder; když soubor chybí, img se skryje a zůstane popisek */
+  .photo { position: relative; overflow: hidden; }
+  .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .photo .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 8px; font-size: 11px; line-height: 1.3; color: rgba(255,255,255,.85);
+  }
+
   /* Horní lišta */
   .topbar {
     position: sticky; top: 0; z-index: 5;
@@ -60,19 +69,11 @@
 
   /* Hlavička profilu */
   .head { display: flex; align-items: center; gap: 24px; padding: 8px 16px 12px; }
-  .avatar-btn { position: relative; flex: 0 0 auto; border-radius: 50%; }
-  .ring {
-    width: 86px; height: 86px; border-radius: 50%;
-    padding: 3px; background: var(--ring);
-  }
-  .ring.seen { background: var(--line); }
+  .avatar-btn { position: relative; flex: 0 0 auto; border-radius: 50%; cursor: pointer; }
+  .ring { width: 86px; height: 86px; border-radius: 50%; padding: 3px; background: var(--ring); }
   .ring-inner { width: 100%; height: 100%; border-radius: 50%; padding: 3px; background: var(--bg); }
-  .avatar {
-    width: 100%; height: 100%; border-radius: 50%;
-    background: linear-gradient(160deg, #b3cdd6, #6f8f9b);
-    display: grid; place-items: center;
-    font-size: 34px;
-  }
+  .avatar { width: 100%; height: 100%; border-radius: 50%; background: #a99a8a; }
+  .avatar .ph { font-size: 22px; font-weight: 600; color: #fff; }
   .stats { flex: 1; display: flex; justify-content: space-around; text-align: center; }
   .stats b { display: block; font-size: 17px; }
   .stats span { font-size: 13px; }
@@ -80,44 +81,22 @@
   .bio { padding: 0 16px; font-size: 14px; line-height: 1.35; }
   .bio .name { font-weight: 600; }
   .bio .cat { color: var(--muted); }
-  .bio a { color: #00376b; text-decoration: none; font-weight: 500; }
+  .bio .link { color: #00376b; font-weight: 500; display: flex; align-items: center; gap: 4px; }
 
-  .actions { display: flex; gap: 6px; padding: 14px 16px 4px; }
+  .actions { display: flex; gap: 6px; padding: 14px 16px 14px; }
   .actions button {
     flex: 1; height: 32px; border-radius: 8px;
     background: var(--btn); font-weight: 600; font-size: 14px;
   }
   .actions .follow { background: var(--blue); color: #fff; }
-  .actions .sq { flex: 0 0 34px; }
+  .actions .sq { flex: 0 0 34px; display: grid; place-items: center; }
 
-  /* Zvýraznění */
-  .highlights { display: flex; gap: 14px; overflow-x: auto; padding: 14px 16px 10px; scrollbar-width: none; }
-  .highlights::-webkit-scrollbar { display: none; }
-  .hl { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 0 0 auto; width: 66px; }
-  .hl .cover {
-    width: 64px; height: 64px; border-radius: 50%;
-    border: 1px solid var(--line); padding: 2px;
-  }
-  .hl .cover div {
-    width: 100%; height: 100%; border-radius: 50%;
-    display: grid; place-items: center; font-size: 26px;
-  }
-  .hl span { font-size: 12px; max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  /* Taby + mřížka */
-  .tabs { display: flex; border-top: 1px solid var(--line); margin-top: 6px; }
+  /* Taby + mřížka (příspěvky nejsou klikací) */
+  .tabs { display: flex; border-top: 1px solid var(--line); }
   .tabs button { flex: 1; height: 44px; display: grid; place-items: center; color: var(--muted); }
   .tabs button.active { color: var(--text); box-shadow: inset 0 -1px 0 var(--text); }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
-  .post {
-    aspect-ratio: 4 / 5;
-    display: grid; place-items: center;
-    font-size: 34px; position: relative;
-  }
-  .post.multi::after {
-    content: ""; position: absolute; top: 8px; right: 8px; width: 14px; height: 14px;
-    border: 2px solid #fff; border-radius: 3px; box-shadow: 3px -3px 0 -1px #fff;
-  }
+  .post { aspect-ratio: 4 / 5; pointer-events: none; user-select: none; }
 
   /* Spodní navigace */
   .bottombar {
@@ -125,7 +104,8 @@
     height: 52px; background: var(--bg); border-top: 1px solid var(--line);
     display: flex; justify-content: space-around; align-items: center;
   }
-  .mini-avatar { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--text); background: linear-gradient(160deg, #b3cdd6, #6f8f9b); display: grid; place-items: center; font-size: 13px; }
+  .mini-avatar { width: 26px; height: 26px; border-radius: 50%; background: #a99a8a; }
+  .mini-avatar .ph { font-size: 10px; font-weight: 600; color: #fff; padding: 0; }
 
   /* Story viewer */
   .story {
@@ -142,28 +122,24 @@
   .story-head {
     position: absolute; top: 20px; left: 0; right: 0; z-index: 3;
     display: flex; align-items: center; gap: 8px; padding: 0 12px;
-    font-size: 14px;
+    font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,.4);
   }
-  .story-head .mini-avatar { border: 0; width: 32px; height: 32px; }
+  .story-head .mini-avatar { width: 32px; height: 32px; }
   .story-head b { font-weight: 600; }
-  .story-head .time { opacity: .7; }
-  .story-head .close { margin-left: auto; font-size: 28px; line-height: 1; padding: 4px 6px; }
-  .slide {
-    flex: 1; position: relative;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 80px 28px 90px; gap: 16px;
+  .story-head .time { opacity: .75; }
+  .story-head .close { margin-left: auto; font-size: 28px; line-height: 1; padding: 4px 6px; cursor: pointer; }
+  .slide { flex: 1; background: #3b3530; }
+  .slide .ph { font-size: 14px; padding: 80px 32px; }
+  .slide .overlay {
+    position: absolute; left: 0; right: 0; bottom: 120px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1;
   }
-  .slide .emoji { font-size: 90px; line-height: 1; }
   .slide .caption {
-    font-size: 22px; font-weight: 700; line-height: 1.25;
-    background: rgba(0,0,0,.35); padding: 6px 12px; border-radius: 8px;
+    font-size: 20px; font-weight: 600; line-height: 1.25;
+    background: rgba(255,255,255,.92); color: #222; padding: 6px 12px; border-radius: 6px;
   }
-  .slide .sticker {
-    font-size: 14px; font-weight: 700; color: #111;
-    background: #fff; padding: 6px 12px; border-radius: 10px;
-    transform: rotate(-4deg);
-  }
-  .tap { position: absolute; top: 60px; bottom: 70px; z-index: 2; }
+  .slide .sticker { font-size: 13px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+  .tap { position: absolute; top: 60px; bottom: 70px; z-index: 2; cursor: pointer; }
   .tap.prev { left: 0; width: 35%; }
   .tap.next { right: 0; width: 65%; }
   .story-foot {
@@ -188,33 +164,23 @@
   <div class="scroll">
     <header class="topbar">
       <div class="user">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-        <span id="username">lukas.k_09</span>
+        <span class="js-username"></span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
       </div>
       <div class="icons">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </div>
     </header>
 
     <section class="head">
       <button class="avatar-btn" id="avatarBtn" aria-label="Zobrazit příběh">
-        <div class="ring" id="avatarRing"><div class="ring-inner"><div class="avatar">🧢</div></div></div>
+        <div class="ring"><div class="ring-inner"><div class="avatar photo js-avatar"></div></div></div>
       </button>
-      <div class="stats">
-        <div><b>27</b><span>příspěvků</span></div>
-        <div><b>412</b><span>sledujících</span></div>
-        <div><b>389</b><span>sleduje</span></div>
-      </div>
+      <div class="stats" id="stats"></div>
     </section>
 
-    <section class="bio">
-      <div class="name">Lukáš</div>
-      <div class="cat">Hráč videoher</div>
-      <div>⚽ FK mládež #9<br>🎮 ranked grind<br>🎧 noční playlisty</div>
-      <a href="#">odkaz.example/lukas</a>
-    </section>
+    <section class="bio" id="bio"></section>
 
     <section class="actions">
       <button class="follow">Sledovat</button>
@@ -223,8 +189,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M19 8v6M16 11h6"/></svg>
       </button>
     </section>
-
-    <section class="highlights" id="highlights"></section>
 
     <nav class="tabs">
       <button class="active" aria-label="Příspěvky">
@@ -246,19 +210,19 @@
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></svg>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></svg>
-    <div class="mini-avatar">🧢</div>
+    <div class="mini-avatar photo js-avatar"></div>
   </nav>
 
   <!-- Story viewer -->
   <div class="story" id="story" role="dialog" aria-modal="true">
     <div class="bars" id="bars"></div>
     <div class="story-head">
-      <div class="mini-avatar">🧢</div>
-      <b id="storyUser">lukas.k_09</b>
+      <div class="mini-avatar photo js-avatar"></div>
+      <b class="js-username"></b>
       <span class="time" id="storyTime"></span>
       <button class="close" id="closeBtn" aria-label="Zavřít">×</button>
     </div>
-    <div class="slide" id="slide"></div>
+    <div class="slide photo" id="slide"></div>
     <button class="tap prev" id="tapPrev" aria-label="Předchozí"></button>
     <button class="tap next" id="tapNext" aria-label="Další"></button>
     <div class="story-foot">
@@ -270,66 +234,74 @@
 </div>
 
 <script>
-/* ===== DATA (placeholder obsah – nahradit reálnými podklady) ===== */
-const STORIES = {
-  current: {
-    title: "lukas.k_09", time: "3 h",
-    slides: [
-      { bg: "linear-gradient(160deg,#2b5876,#4e4376)", emoji: "🌙", caption: "zase nemůžu spát" },
-      { bg: "linear-gradient(160deg,#141e30,#243b55)", emoji: "🎮", caption: "1 more game", sticker: "02:14" },
-      { bg: "linear-gradient(160deg,#232526,#414345)", emoji: "🎧", caption: "tahle písnička 🔁" }
-    ]
-  },
-  highlights: [
-    { id: "fotbal", label: "fotbal", cover: "⚽", coverBg: "#dae7ec", slides: [
-      { bg: "linear-gradient(160deg,#11998e,#38ef7d)", emoji: "⚽", caption: "gól v 89. minutě!!", sticker: "FK mládež" },
-      { bg: "linear-gradient(160deg,#0f9b0f,#1e5631)", emoji: "🏆", caption: "výhra 3:2" }
-    ]},
-    { id: "leto", label: "léto", cover: "☀️", coverBg: "#ffe8b3", slides: [
-      { bg: "linear-gradient(160deg,#f7971e,#ffd200)", emoji: "🏕️", caption: "tábor 2026" },
-      { bg: "linear-gradient(160deg,#36d1dc,#5b86e5)", emoji: "🌊", caption: "koupák s partou" },
-      { bg: "linear-gradient(160deg,#ff9966,#ff5e62)", emoji: "🌅", caption: "best summer" }
-    ]},
-    { id: "parta", label: "parta", cover: "🤙", coverBg: "#f3d6d6", slides: [
-      { bg: "linear-gradient(160deg,#dc5b5b,#8e2d2d)", emoji: "🍕", caption: "pizza pátek", sticker: "@kluci" },
-      { bg: "linear-gradient(160deg,#614385,#516395)", emoji: "😂", caption: "nejvíc" }
-    ]},
-    { id: "gaming", label: "gaming", cover: "🎮", coverBg: "#d9d4f2", slides: [
-      { bg: "linear-gradient(160deg,#0f0c29,#302b63)", emoji: "🎯", caption: "new rank unlocked", sticker: "GG" }
-    ]},
-    { id: "pes", label: "Ben 🐶", cover: "🐶", coverBg: "#efe2cf", slides: [
-      { bg: "linear-gradient(160deg,#c79081,#dfa579)", emoji: "🐕", caption: "Ben a já" }
-    ]}
+/* ===== DATA – fiktivní postava. Fotky patří do složky img/ (viz img/README.md) ===== */
+const PROFILE = {
+  username: "klara.mezi.radky",
+  name: "Klára",
+  category: "Copywriter",
+  bio: [
+    "texty za peníze, kapitoly pro radost",
+    "píšu první román (pomalu, ale jistě) 🖋",
+    "filtrovaná káva &gt; espresso · Brno"
+  ],
+  link: "linktr.ee/klara.mezi.radky",
+  stats: { posts: 3, followers: 287, following: 342 },
+  avatar: { src: "img/avatar.jpg", label: "K" }
+};
+
+/* Jediný příběh – kroužek zůstává vždy „nezobrazený“ */
+const STORY = {
+  time: "2 h",
+  slides: [
+    { src: "img/story.jpg", bg: "#3b3530",
+      label: "📷 story.jpg – notebook na stole večer, rozepsaný dokument, lampička",
+      caption: "kapitola 9 ✓", sticker: "23:47 a konečně to dává smysl" }
   ]
 };
 
+/* Příspěvky v mřížce – nejnovější první */
 const POSTS = [
-  ["🌙", "#2b3a55"], ["⚽", "#2e8b57", 1], ["🍕", "#dc5b5b"],
-  ["🎮", "#3b2f6b"], ["🌊", "#4a90c2", 1], ["🐶", "#c79a6b"],
-  ["🏕️", "#d99a2b"], ["🎧", "#444"], ["🏆", "#1e5631"],
-  ["🌅", "#e8774f", 1], ["📚", "#b3cdd6"], ["🚲", "#6f8f9b"]
+  { src: "img/post-3.jpg", bg: "#8a7563", label: "📷 post-3.jpg – čtenářský večer v kavárně, židle, mikrofon" },
+  { src: "img/post-2.jpg", bg: "#6f7a6a", label: "📷 post-2.jpg – mezi regály v knihovně" },
+  { src: "img/post-1.jpg", bg: "#b39b82", label: "📷 post-1.jpg – rozečtená kniha a hrnek kávy" }
 ];
 
-/* ===== RENDER PROFILU ===== */
+/* ===== RENDER ===== */
 const $ = id => document.getElementById(id);
+// popisek leží pod fotkou – je vidět, jen když soubor chybí
+const photo = (src, label) =>
+  `<div class="ph">${label}</div><img src="${src}" alt="" onerror="this.remove()">`;
 
-$("highlights").innerHTML = STORIES.highlights.map((h, i) => `
-  <button class="hl" data-hl="${i}">
-    <div class="cover"><div style="background:${h.coverBg}">${h.cover}</div></div>
-    <span>${h.label}</span>
-  </button>`).join("");
+document.querySelectorAll(".js-username").forEach(el => el.textContent = PROFILE.username);
+document.querySelectorAll(".js-avatar").forEach(el => el.innerHTML = photo(PROFILE.avatar.src, PROFILE.avatar.label));
 
-$("grid").innerHTML = POSTS.map(([e, c, multi]) =>
-  `<div class="post${multi ? " multi" : ""}" style="background:${c}">${e}</div>`).join("");
+const s = PROFILE.stats;
+$("stats").innerHTML = `
+  <div><b>${s.posts}</b><span>příspěvky</span></div>
+  <div><b>${s.followers}</b><span>sledujících</span></div>
+  <div><b>${s.following}</b><span>sleduje</span></div>`;
+
+$("bio").innerHTML = `
+  <div class="name">${PROFILE.name}</div>
+  <div class="cat">${PROFILE.category}</div>
+  <div>${PROFILE.bio.join("<br>")}</div>
+  <div class="link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+    ${PROFILE.link}
+  </div>`;
+
+$("grid").innerHTML = POSTS.map(p =>
+  `<div class="post photo" style="background:${p.bg}">${photo(p.src, p.label)}</div>`).join("");
 
 /* ===== STORY VIEWER ===== */
-const DURATION = 5000;
-let queue = [], idx = 0, start = 0, elapsed = 0, raf = null, paused = false, onDone = null;
+const DURATION = 6000;
+let idx = 0, start = 0, elapsed = 0, raf = null, paused = false;
+const slides = STORY.slides;
 
-function openStory(story, done) {
-  queue = story.slides; idx = 0; onDone = done || null;
-  $("storyTime").textContent = story.time || "";
-  $("bars").innerHTML = queue.map(() => '<div class="bar"><i></i></div>').join("");
+function openStory() {
+  idx = 0;
+  $("storyTime").textContent = STORY.time;
+  $("bars").innerHTML = slides.map(() => '<div class="bar"><i></i></div>').join("");
   $("story").classList.add("open");
   show();
 }
@@ -337,18 +309,18 @@ function openStory(story, done) {
 function closeStory() {
   cancelAnimationFrame(raf);
   $("story").classList.remove("open");
-  if (onDone) onDone();
 }
 
 function show() {
-  const s = queue[idx];
-  $("slide").style.background = s.bg;
-  $("slide").innerHTML = `
-    <div class="emoji">${s.emoji}</div>
-    <div class="caption">${s.caption}</div>
-    ${s.sticker ? `<div class="sticker">${s.sticker}</div>` : ""}`;
+  const sl = slides[idx];
+  $("slide").style.background = sl.bg;
+  $("slide").innerHTML = photo(sl.src, sl.label) + `
+    <div class="overlay">
+      ${sl.caption ? `<div class="caption">${sl.caption}</div>` : ""}
+      ${sl.sticker ? `<div class="sticker">${sl.sticker}</div>` : ""}
+    </div>`;
   [...$("bars").children].forEach((b, i) => b.firstElementChild.style.width = i < idx ? "100%" : "0");
-  elapsed = 0; start = performance.now();
+  elapsed = 0; start = performance.now(); paused = false;
   cancelAnimationFrame(raf); tick();
 }
 
@@ -363,8 +335,8 @@ function tick() {
   });
 }
 
-function next() { idx < queue.length - 1 ? (idx++, show()) : closeStory(); }
-function prev() { idx > 0 ? (idx--, show()) : show(); }
+function next() { idx < slides.length - 1 ? (idx++, show()) : closeStory(); }
+function prev() { if (idx > 0) idx--; show(); }
 
 function pause() { if (!paused) { paused = true; elapsed += performance.now() - start; } }
 function resume() { if (paused) { paused = false; start = performance.now(); } }
@@ -388,13 +360,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") prev();
 });
 
-$("avatarBtn").addEventListener("click", () =>
-  openStory(STORIES.current, () => $("avatarRing").classList.add("seen")));
-
-$("highlights").addEventListener("click", e => {
-  const b = e.target.closest("[data-hl]");
-  if (b) openStory(STORIES.highlights[+b.dataset.hl]);
-});
+$("avatarBtn").addEventListener("click", openStory);
 </script>
 </body>
 </html>
